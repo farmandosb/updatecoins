@@ -29,7 +29,7 @@ public class AppRunner implements CommandLineRunner {
     String exportFileName = "prueba01.xlsx";
 
     List<UserDTO> lista = userService.getUsersWithPointsFromDB();
-    userService.updatePointsFromExcel(lista, pathToFile + importFileName);
+    userService.updatePointsFromExcel(pathToFile + importFileName);
 
     Map<Integer, List<String>> rawMap;
     rawMap = excelUtility.getRawDataFromExcel(pathToFile + importFileName);

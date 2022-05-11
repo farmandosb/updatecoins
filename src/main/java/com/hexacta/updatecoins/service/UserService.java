@@ -64,8 +64,10 @@ public class UserService {
     return filteredUserDTOS;
   }
 
-  public void updatePointsFromExcel(List<UserDTO> userDTOS, String pathToExcelFile) {
+  public void updatePointsFromExcel(String pathToExcelFile) {
+    List<UserDTO> userDTOS = getUsersWithPointsFromDB();
     Map<String, String> excelData;
+
     List<UserDTO> updatedUsers = new ArrayList<>();
     excelData = excelUtility.getUserEmailWithPointsFromSpreadsheet(pathToExcelFile);
     userDTOS.stream()
