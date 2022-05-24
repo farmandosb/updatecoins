@@ -11,7 +11,5 @@ public interface IWpUserMetaDAO extends JpaRepository<WpUserMeta, Long> {
   List<WpUserMeta> findByMetaKey(String metaKey);
 
   WpUserMeta findByUserIdAndMetaKey(Long userId, String metaKey);
-
-
 }
 

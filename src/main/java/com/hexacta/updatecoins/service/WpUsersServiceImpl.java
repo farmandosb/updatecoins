@@ -1,12 +1,13 @@
 package com.hexacta.updatecoins.service;
 
-import com.hexacta.updatecoins.dao.jpa.IWpUsersDAO;
 import com.hexacta.updatecoins.dao.entities.WpUsers;
+import com.hexacta.updatecoins.dao.jpa.IWpUsersDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+
 @Service
 public class WpUsersServiceImpl implements IWpUsersService {
 
