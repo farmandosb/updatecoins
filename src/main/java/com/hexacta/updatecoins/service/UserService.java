@@ -7,7 +7,6 @@ import com.hexacta.updatecoins.util.ExcelUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,50 +46,45 @@ public class UserService {
     return usersDTO;
   }
 
-  public List<UserDTO> matchUsersWithEmail(List<UserDTO> userDTOS) throws IOException {
-    Map<String, String> testData = new HashMap<String, String>();
-    String pathToFile = "C:/Users/fsuarez/Desktop/IN PROGRESS/Creditcoins/App/data-excel/usersByEmailWithCoins.xlsx";
-    testData = excelUtility.getUserEmailWithPointsFromSpreadsheet(pathToFile);
-    //System.out.println(users);
-    System.out.println(testData.entrySet());
-    Map<String, String> finalTestData = testData;
+  public void updateUsersPointsInDBFromExcelFile(String pathToExcelFile) {
+    List<UserDTO> usersDTOBeforeUpdate = getUsersWithPointsFromDB();
+    System.out.println(usersDTOBeforeUpdate);
 
-    //Filter users retrieved from DB by email from excel file
-    List<UserDTO> filteredUserDTOS = userDTOS.stream()
-        .filter(u -> finalTestData.entrySet().stream().anyMatch(
-            e -> e.getKey().equalsIgnoreCase(u.getUserEmail())
-        )).collect(Collectors.toList());
-    System.out.println(filteredUserDTOS);
-    return filteredUserDTOS;
+    Map<Integer, List<String>> excelData = excelUtility.getRawDataFromExcel(pathToExcelFile);
+    Map<Integer, List<String>> dataToExport = new HashMap<>();
+
+    List<UserDTO> usersFoundByEmail = new ArrayList<>();
+    excelData.entrySet().forEach(e -> {
+      List<String> columns = e.getValue();
+      int columnsSize = columns.size();
+      usersDTOBeforeUpdate.forEach(u -> {
+        if (e.getValue().get(0).equalsIgnoreCase(u.getUserEmail())) {
+          String newPoints = e.getValue().get(1);
+          String oldPoints = u.getInitialPoints();
+          if (!newPoints.equalsIgnoreCase(oldPoints)) {
+            WpUserMeta wpUserMeta = wpUserMetaService.findByUserIdAndMetaKey(u.getId(), "initial_points");
+            columns.add(oldPoints);
+            u.setInitialPoints(newPoints);
+            wpUserMeta.setMetaValue(newPoints);
+            wpUserMetaService.save(wpUserMeta);
+          }
+        }
+      });
+      if (columns.size() == columnsSize) {
+        columns.add("not updated");
+      }
+      dataToExport.put(e.getKey(), columns);
+    });
+
+    System.out.println(usersDTOBeforeUpdate);
+    System.out.println(usersFoundByEmail);
+
+    List<UserDTO> usersDTOAfterUpdate = getUsersWithPointsFromDB();
+    excelUtility.exportDataToExcel(dataToExport);
+    System.out.println(usersDTOAfterUpdate);
   }
 
-  public void updatePointsFromExcel(String pathToExcelFile) {
-    List<UserDTO> userDTOS = getUsersWithPointsFromDB();
-    Map<String, String> excelData;
-
-    List<UserDTO> updatedUsers = new ArrayList<>();
-    excelData = excelUtility.getUserEmailWithPointsFromSpreadsheet(pathToExcelFile);
-    userDTOS.stream()
-        .forEach(u -> {
-          excelData.entrySet()
-              .forEach(e -> {
-                if (e.getKey().equalsIgnoreCase(u.getUserEmail())) {
-                  UserDTO user = new UserDTO();
-                  user = u;
-                  user.setInitialPoints( e.getValue());
-                  updatedUsers.add(user);
-                }
-              });
-        });
-    System.out.println(userDTOS);
-    System.out.println(updatedUsers);
-    updateUsersCoinsInDB(updatedUsers);
-    List<UserDTO> lista = getUsersWithPointsFromDB();
-    System.out.println(lista);
-
-  }
-
-  private void updateUsersCoinsInDB(List<UserDTO> usersDTOs){
+  private void updateUsersCoinsInDB(List<UserDTO> usersDTOs) {
     for (UserDTO usersDTO : usersDTOs) {
       WpUserMeta wpUserMeta = wpUserMetaService.findByUserIdAndMetaKey(usersDTO.getId(), "initial_points");
       wpUserMeta.setMetaValue(usersDTO.getInitialPoints());
@@ -98,4 +92,9 @@ public class UserService {
     }
   }
 
+  private void updateUserCoinsInDB(UserDTO usersDTO) {
+    WpUserMeta wpUserMeta = wpUserMetaService.findByUserIdAndMetaKey(usersDTO.getId(), "initial_points");
+    wpUserMeta.setMetaValue(usersDTO.getInitialPoints());
+    wpUserMetaService.save(wpUserMeta);
+  }
 }

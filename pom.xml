@@ -14,7 +14,7 @@
 	<name>updatecoins</name>
 	<description>Springboot app for update coins in woocommerce</description>
 	<properties>
-		<java.version>11</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
