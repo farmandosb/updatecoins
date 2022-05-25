@@ -28,7 +28,7 @@ public class UserService {
     List<Long> wpUsersMetaIds = wpUsersMeta.stream().map(WpUserMeta::getUserId).collect(Collectors.toList());
     List<UserDTO> usersDTO = new ArrayList<>();
 
-    wpUsers.stream().forEach(u -> {
+    wpUsers.forEach(u -> {
       if (wpUsersMetaIds.contains(u.getId())) {
         UserDTO user = new UserDTO();
         user.setUserEmail(u.getUserEmail());
@@ -48,12 +48,10 @@ public class UserService {
 
   public void updateUsersPointsInDBFromExcelFile(String pathToExcelFile) {
     List<UserDTO> usersDTOs = getUsersWithPointsFromDB();
-    System.out.println(usersDTOs);
 
     Map<Integer, List<String>> excelData = excelUtility.getRawDataFromExcel(pathToExcelFile);
     Map<Integer, List<String>> dataToExport = new HashMap<>();
 
-    List<UserDTO> usersFoundByEmail = new ArrayList<>();
     excelData.entrySet().forEach(e -> {
       List<String> columns = e.getValue();
       int columnsSize = columns.size();
@@ -76,21 +74,6 @@ public class UserService {
       dataToExport.put(e.getKey(), columns);
     });
 
-    System.out.println(usersDTOs);
     excelUtility.exportDataToExcel(dataToExport);
-  }
-
-  private void updateUsersCoinsInDB(List<UserDTO> usersDTOs) {
-    for (UserDTO usersDTO : usersDTOs) {
-      WpUserMeta wpUserMeta = wpUserMetaService.findByUserIdAndMetaKey(usersDTO.getId(), "initial_points");
-      wpUserMeta.setMetaValue(usersDTO.getInitialPoints());
-      wpUserMetaService.save(wpUserMeta);
-    }
-  }
-
-  private void updateUserCoinsInDB(UserDTO usersDTO) {
-    WpUserMeta wpUserMeta = wpUserMetaService.findByUserIdAndMetaKey(usersDTO.getId(), "initial_points");
-    wpUserMeta.setMetaValue(usersDTO.getInitialPoints());
-    wpUserMetaService.save(wpUserMeta);
   }
 }

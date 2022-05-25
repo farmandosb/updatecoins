@@ -18,11 +18,8 @@ public class AppRunner implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
 
-    System.out.println("In CommandLineRunnerImpl ");
-
-    String pathToFile = "C:/Users/fsuarez/Desktop/IN PROGRESS/Creditcoins/App/data-excel/";
+    String pathToFile = "./";
     String importFileName = "usersByEmailWithCoins.xlsx";
-    String exportFileName = "prueba01.xlsx";
     userService.updateUsersPointsInDBFromExcelFile(pathToFile + importFileName);
   }
 }
