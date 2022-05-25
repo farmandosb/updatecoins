@@ -47,8 +47,8 @@ public class UserService {
   }
 
   public void updateUsersPointsInDBFromExcelFile(String pathToExcelFile) {
-    List<UserDTO> usersDTOBeforeUpdate = getUsersWithPointsFromDB();
-    System.out.println(usersDTOBeforeUpdate);
+    List<UserDTO> usersDTOs = getUsersWithPointsFromDB();
+    System.out.println(usersDTOs);
 
     Map<Integer, List<String>> excelData = excelUtility.getRawDataFromExcel(pathToExcelFile);
     Map<Integer, List<String>> dataToExport = new HashMap<>();
@@ -57,7 +57,7 @@ public class UserService {
     excelData.entrySet().forEach(e -> {
       List<String> columns = e.getValue();
       int columnsSize = columns.size();
-      usersDTOBeforeUpdate.forEach(u -> {
+      usersDTOs.forEach(u -> {
         if (e.getValue().get(0).equalsIgnoreCase(u.getUserEmail())) {
           String newPoints = e.getValue().get(1);
           String oldPoints = u.getInitialPoints();
@@ -76,12 +76,8 @@ public class UserService {
       dataToExport.put(e.getKey(), columns);
     });
 
-    System.out.println(usersDTOBeforeUpdate);
-    System.out.println(usersFoundByEmail);
-
-    List<UserDTO> usersDTOAfterUpdate = getUsersWithPointsFromDB();
+    System.out.println(usersDTOs);
     excelUtility.exportDataToExcel(dataToExport);
-    System.out.println(usersDTOAfterUpdate);
   }
 
   private void updateUsersCoinsInDB(List<UserDTO> usersDTOs) {

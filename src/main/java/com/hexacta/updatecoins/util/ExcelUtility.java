@@ -76,12 +76,12 @@ public class ExcelUtility {
     Row header = sheet.createRow(0);
 
     CellStyle headerStyle = workbook.createCellStyle();
-    headerStyle.setFillForegroundColor(IndexedColors.LIGHT_BLUE.getIndex());
+    headerStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
     headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
     XSSFFont font = workbook.createFont();
     font.setFontName("Arial");
-    font.setFontHeightInPoints((short) 14);
+    font.setFontHeightInPoints((short) 12);
     font.setBold(true);
     headerStyle.setFont(font);
 
@@ -104,19 +104,41 @@ public class ExcelUtility {
     highLightStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
     highLightStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
+    CellStyle highLightTotalStyle = workbook.createCellStyle();
+    highLightTotalStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+    highLightTotalStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+    highLightTotalStyle.setFont(font);
+
+    int updated = 0;
+    int total = data.size();
     for (int i = 1; i < data.size(); i++) {
       Row row = sheet.createRow(i);
       for (int j = 0; j < data.get(j).size(); j++) {
         Cell cell = row.createCell(j);
         cell.setCellValue(data.get(i).get(j));
         cell.setCellStyle(style);
-        String c = data.get(i).get(j);
-        if (j == 2 && (data.get(i).get(j) != "not updated")) {
+        boolean updatedRow = data.get(i).get(2) != "not updated";
+        if (updatedRow) {
           cell.setCellStyle(highLightStyle);
-          row.setRowStyle(highLightStyle);
+          updated += 1;
         }
       }
     }
+    Row row1 = sheet.createRow(total);
+    Cell cell1 = row1.createCell(0);
+    cell1.setCellValue("Total");
+    Cell cell2 = row1.createCell(1);
+    cell2.setCellValue(total + 1);
+    cell1.setCellStyle(headerStyle);
+    cell2.setCellStyle(headerStyle);
+
+    Row row2 = sheet.createRow(total + 1);
+    Cell cell3 = row2.createCell(0);
+    cell3.setCellValue("Updated");
+    cell3.setCellStyle(highLightTotalStyle);
+    Cell cell4 = row2.createCell(1);
+    cell4.setCellValue(updated);
+    cell4.setCellStyle(highLightTotalStyle);
 
     File currDir = new File(".");
     String path = currDir.getAbsolutePath();
