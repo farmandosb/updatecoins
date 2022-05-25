@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.hexacta</groupId>
     <artifactId>updatecoins</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <name>updatecoins</name>
     <description>Springboot app for update coins in woocommerce</description>
     <properties>
@@ -49,6 +49,19 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>spring-boot</classifier>
+                            <mainClass>
+                                com.hexacta.updatecoins.UpdatecoinsApplication
+                            </mainClass>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
