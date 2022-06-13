@@ -28,32 +28,37 @@ public class ExcelUtility {
 
       int i = 0;
       for (Row row : sheet) {
-        data.put(i, new ArrayList<>());
-        for (int j = 0; j < 2; j++) {
-          Cell cell = row.getCell(j);
-          switch (cell.getCellType()) {
-            case STRING:
-              data.get(i).add(cell.getRichStringCellValue().getString());
-              break;
-            case NUMERIC:
-              if (DateUtil.isCellDateFormatted(cell)) {
-                data.get(i).add(cell.getDateCellValue() + "");
-              } else {
-                // get double casted to int (not fraction of points)
-                data.get(i).add((int) cell.getNumericCellValue() + "");
+        Cell firstCell = row.getCell(0);
+        if (firstCell != null && firstCell.getRichStringCellValue().getString() != "") {
+          data.put(i, new ArrayList<>());
+          for (int j = 0; j < 2; j++) {
+            Cell cell = row.getCell(j);
+            if (cell != null) {
+              switch (cell.getCellType()) {
+                case STRING:
+                  data.get(i).add(cell.getStringCellValue());
+                  break;
+                case NUMERIC:
+                  if (DateUtil.isCellDateFormatted(cell)) {
+                    data.get(i).add(cell.getDateCellValue() + "");
+                  } else {
+                    // get double casted to int (not fraction of points)
+                    data.get(i).add((int) cell.getNumericCellValue() + "");
+                  }
+                  break;
+                case BOOLEAN:
+                  data.get(i).add(cell.getBooleanCellValue() + "");
+                  break;
+                case FORMULA:
+                  data.get(i).add(cell.getCellFormula() + "");
+                  break;
+                default:
+                  data.get(i).add(" ");
               }
-              break;
-            case BOOLEAN:
-              data.get(i).add(cell.getBooleanCellValue() + "");
-              break;
-            case FORMULA:
-              data.get(i).add(cell.getCellFormula() + "");
-              break;
-            default:
-              data.get(i).add(" ");
+            }
           }
+          i++;
         }
-        i++;
       }
       if (workbook != null) {
         workbook.close();
@@ -110,29 +115,33 @@ public class ExcelUtility {
     highLightTotalStyle.setFont(font);
 
     int updated = 0;
-    int total = data.size();
+    int total = data.size() - 1;
     for (int i = 1; i < data.size(); i++) {
       Row row = sheet.createRow(i);
-      for (int j = 0; j < data.get(j).size(); j++) {
+      boolean updatedRow = data.get(i).get(2) != "not updated";
+
+      if (updatedRow) {
+        updated += 1;
+      }
+
+      for (int j = 0; j < data.get(i).size(); j++) {
         Cell cell = row.createCell(j);
         cell.setCellValue(data.get(i).get(j));
         cell.setCellStyle(style);
-        boolean updatedRow = data.get(i).get(2) != "not updated";
         if (updatedRow) {
           cell.setCellStyle(highLightStyle);
-          updated += 1;
         }
       }
     }
-    Row row1 = sheet.createRow(total);
+    Row row1 = sheet.createRow(total + 1);
     Cell cell1 = row1.createCell(0);
     cell1.setCellValue("Total");
     Cell cell2 = row1.createCell(1);
-    cell2.setCellValue(total + 1);
+    cell2.setCellValue(total);
     cell1.setCellStyle(headerStyle);
     cell2.setCellStyle(headerStyle);
 
-    Row row2 = sheet.createRow(total + 1);
+    Row row2 = sheet.createRow(total + 2);
     Cell cell3 = row2.createCell(0);
     cell3.setCellValue("Updated");
     cell3.setCellStyle(highLightTotalStyle);

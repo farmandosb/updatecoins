@@ -4,7 +4,10 @@ import com.hexacta.updatecoins.service.UserService;
 import com.hexacta.updatecoins.util.ExcelUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.system.ApplicationHome;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
 
 @Component
 public class AppRunner implements CommandLineRunner {
@@ -20,7 +23,10 @@ public class AppRunner implements CommandLineRunner {
 
     String pathToFile = "./";
     String importFileName = "usersByEmailWithCoins.xlsx";
-    userService.updateUsersPointsInDBFromExcelFile(pathToFile + importFileName);
+    ApplicationHome home = new ApplicationHome(this.getClass());
+    File jarFile = home.getSource();
+    File jarDir = home.getDir().getParentFile();
+    userService.updateUsersPointsInDBFromExcelFile(jarDir+"/" + importFileName);
   }
 }
 
