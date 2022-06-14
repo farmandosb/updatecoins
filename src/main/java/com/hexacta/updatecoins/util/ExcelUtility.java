@@ -32,7 +32,7 @@ public class ExcelUtility {
       int i = 0;
       for (Row row : sheet) {
         Cell firstCell = row.getCell(0);
-        if (firstCell != null && firstCell.getRichStringCellValue().getString().equalsIgnoreCase("")) {
+        if (firstCell != null && firstCell.getRichStringCellValue().getString()!= "") {
           data.put(i, new ArrayList<>());
           for (int j = 0; j < 2; j++) {
             Cell cell = row.getCell(j);
