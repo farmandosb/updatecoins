@@ -38,6 +38,7 @@ public class UserService {
             .filter(um -> um.getUserId().equals(u.getId()))
             .findAny()
             .orElse(null);
+        assert userMeta != null;
         user.setInitialPoints(userMeta.getMetaValue());
         usersDTO.add(user);
       }

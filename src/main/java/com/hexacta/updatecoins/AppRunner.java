@@ -19,13 +19,11 @@ public class AppRunner implements CommandLineRunner {
   ExcelUtility excelUtility;
 
   @Override
-  public void run(String... args) throws Exception {
+  public void run(String... args) {
 
-    String pathToFile = "./";
     String importFileName = "usersByEmailWithCoins.xlsx";
     ApplicationHome home = new ApplicationHome(this.getClass());
-    File jarFile = home.getSource();
-    File jarDir = home.getDir().getParentFile();
+    File jarDir = home.getDir();
     userService.updateUsersPointsInDBFromExcelFile(jarDir+"/" + importFileName);
   }
 }

@@ -4,9 +4,9 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFFont;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,6 +16,9 @@ import java.util.*;
 @Service
 public class ExcelUtility {
   private final String DEFAULT_FILE_PATTERN = "yyyy-MM-dd-HH-mm-ss";
+
+  @Value("${spring.profiles.active}")
+  private String activeProfile;
 
   public Map<Integer, List<String>> getRawDataFromExcel(String pathToImportFile) {
     Map<Integer, List<String>> data = new TreeMap<>();
@@ -29,7 +32,7 @@ public class ExcelUtility {
       int i = 0;
       for (Row row : sheet) {
         Cell firstCell = row.getCell(0);
-        if (firstCell != null && firstCell.getRichStringCellValue().getString() != "") {
+        if (firstCell != null && firstCell.getRichStringCellValue().getString().equalsIgnoreCase("")) {
           data.put(i, new ArrayList<>());
           for (int j = 0; j < 2; j++) {
             Cell cell = row.getCell(j);
@@ -73,7 +76,7 @@ public class ExcelUtility {
   public void exportDataToExcel(Map<Integer, List<String>> data) {
     XSSFWorkbook workbook = new XSSFWorkbook();
 
-    Sheet sheet = workbook.createSheet("UsersCoinsUpdated");
+    Sheet sheet = workbook.createSheet(activeProfile);
     sheet.setColumnWidth(0, 6000);
     sheet.setColumnWidth(1, 4000);
     sheet.setColumnWidth(2, 4000);
@@ -118,7 +121,7 @@ public class ExcelUtility {
     int total = data.size() - 1;
     for (int i = 1; i < data.size(); i++) {
       Row row = sheet.createRow(i);
-      boolean updatedRow = data.get(i).get(2) != "not updated";
+      boolean updatedRow = data.get(i).get(2).equalsIgnoreCase("not updated");
 
       if (updatedRow) {
         updated += 1;
@@ -149,10 +152,7 @@ public class ExcelUtility {
     cell4.setCellValue(updated);
     cell4.setCellStyle(highLightTotalStyle);
 
-    File currDir = new File(".");
-    String path = currDir.getAbsolutePath();
-    String fileLocation = path.substring(0, path.length() - 1) + createFileName();
-
+    String fileLocation = createFileName();
     try (FileOutputStream outputStream = new FileOutputStream(fileLocation)) {
       workbook.write(outputStream);
       workbook.close();
