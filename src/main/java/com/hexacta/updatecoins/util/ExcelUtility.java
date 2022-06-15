@@ -121,7 +121,7 @@ public class ExcelUtility {
     int total = data.size() - 1;
     for (int i = 1; i < data.size(); i++) {
       Row row = sheet.createRow(i);
-      boolean updatedRow = data.get(i).get(2).equalsIgnoreCase("not updated");
+      boolean updatedRow = !data.get(i).get(2).equalsIgnoreCase("not updated");
 
       if (updatedRow) {
         updated += 1;

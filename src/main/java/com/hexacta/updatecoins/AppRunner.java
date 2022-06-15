@@ -28,16 +28,6 @@ public class AppRunner implements CommandLineRunner {
 
     File appDir = new File(".");
 
-    if (JarUtilities.runningFromJar()) {
-      // run in jar
-      appDir = home.getDir();
-    }
-
-    if (JarUtilities.runningFromTarget()) {
-      // run in ide
-      appDir = home.getDir().getParentFile();
-    }
-
     userService.updateUsersPointsInDBFromExcelFile(appDir + "/" + importFileName);
   }
 }

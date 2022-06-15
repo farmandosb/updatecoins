@@ -60,7 +60,6 @@ public class WpUserMeta {
 
   @Override
   public String toString() {
-//String.format("id: %d, displayName: %s, userEmai: %s\n", id, displayName, userEmail);
     return String.format("%d %15s %15s\n", userId, metaKey, metaValue);
   }
 }
